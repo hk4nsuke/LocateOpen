@@ -25,6 +25,8 @@ if executable("slocate")
     let s:slocate_app         = "slocate"
 elseif executable("rlocate")
     let s:slocate_app         = "rlocate"
+elseif executable("locate")
+    let s:slocate_app         = "locate"
 else
     finish
 endif
