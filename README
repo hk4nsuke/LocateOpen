@@ -5,6 +5,7 @@ This script uses slocate (or a similar application) to allow the user to open a 
 Usage:
 
 :LocateEdit somefile.txt
+:LocateTab somefile.txt
 :LocateSplit somefile.txt
 :LocateSource somefile.vim
 :LocateRead somefile.txt
@@ -19,6 +20,9 @@ To disable smart case mode:
 
 To enable always prompt mode:
 :let g:locateopen_alwaysprompt = 1
+
+To set 'slocate' database:
+:let g:locateopen_database = "my.db
 
 Requirements:
 
