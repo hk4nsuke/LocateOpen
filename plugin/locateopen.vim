@@ -122,6 +122,11 @@ function! LocateEdit(file)
     call s:LocateRun('edit', a:file)
 endfun
 
+" Find a file and :tabnew it
+function! LocateTab(file)
+    call s:LocateRun('tabnew', a:file)
+endfun
+
 " Find a file and :split it
 function! LocateSplit(file)
     call s:LocateRun('split', a:file)
@@ -139,6 +144,7 @@ endfun
 
 " Do magicky export things
 command! -nargs=1 LocateEdit   :call LocateEdit(<q-args>)
+command! -nargs=1 LocateTab    :call LocateTab(<q-args>)
 command! -nargs=1 LocateSplit  :call LocateSplit(<q-args>)
 command! -nargs=1 LocateSource :call LocateSource(<q-args>)
 command! -nargs=1 LocateRead   :call LocateRead(<q-args>)
