@@ -16,7 +16,7 @@
 "                :let g:locateopen_ignorecase = 1    " enable ignore case mode
 "                :let g:locateopen_smartcase = 0     " disable smart case mode
 "                :let g:locateopen_alwaysprompt = 1  " show menu for one match
-"                :let g:locateopen_database = \"db\" " set 'slocate' database
+"                :let g:locateopen_database = "db"   " set 'slocate' database
 "
 " Requirements:  Needs 'slocate' or a compatible program. You'll also need an
 "                up-to-date locate database. Most systems seem to run updatedb
