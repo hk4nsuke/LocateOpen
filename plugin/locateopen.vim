@@ -33,12 +33,14 @@ endif
 
 let s:slocate_args            = "-r"
 let s:slocate_i_args          = "-i"
+let s:slocate_database_args   = "-d"
 let s:slocate_cmd             = s:slocate_app . " " . s:slocate_args
 let s:path_seperator          = "/"
 
 let g:locateopen_ignorecase   = 0
 let g:locateopen_smartcase    = 1
 let g:locateopen_alwaysprompt = 0
+let g:locateopen_database     = ""
 
 " Escape str for passing to slocate -r, so that magic characters aren't
 " interpreted as regex metachars.
@@ -53,6 +55,9 @@ function! s:LocateFile(file, ignorecase, smartcase)
     let l:command = s:slocate_app
     if a:ignorecase
         let l:command = l:command . " " . s:slocate_i_args
+    endif
+    if g:locateopen_database != ""
+        let l:command = l:command . " " . s:slocate_database_args . " " . g:locateopen_database
     endif
     let l:command = l:command . " " . s:slocate_args . " '" .
         \ s:path_seperator . s:EscapeForLocate(a:file) . "$'"
