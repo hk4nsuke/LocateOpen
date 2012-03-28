@@ -7,7 +7,7 @@
 "                itself.
 "
 " Usage:         :LocateEdit somefile.txt            " find and edit
-"                :LocateTab somefile.vim             " find and tabnew
+"                :LocateTab somefile.txt             " find and tabnew
 "                :LocateSplit somefile.txt           " find and split
 "                :LocateRead somefile.txt            " find and read
 "                :LocateSource somefile.vim          " find and source
