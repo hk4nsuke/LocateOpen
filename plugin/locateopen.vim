@@ -6,17 +6,18 @@
 " License:       You may redistribute this plugin under the same terms as Vim
 "                itself.
 "
-" Usage:         :LocateEdit somefile.txt            " find and edit
-"                :LocateTab somefile.txt             " find and tabnew
-"                :LocateSplit somefile.txt           " find and split
-"                :LocateRead somefile.txt            " find and read
-"                :LocateSource somefile.vim          " find and source
+" Usage:         :LocateEdit somefile.txt           " find and edit
+"                :LocateTab somefile.txt            " find and tabnew
+"                :LocateSplit somefile.txt          " find and split
+"                :LocateRead somefile.txt           " find and read
+"                :LocateSource somefile.vim         " find and source
 "
 " Configuration:
-"                :let g:locateopen_ignorecase = 1    " enable ignore case mode
-"                :let g:locateopen_smartcase = 0     " disable smart case mode
-"                :let g:locateopen_alwaysprompt = 1  " show menu for one match
-"                :let g:locateopen_database = "db"   " set 'slocate' database
+"                :let g:locateopen_ignorecase = 1   " enable ignore case mode
+"                :let g:locateopen_smartcase = 0    " disable smart case mode
+"                :let g:locateopen_alwaysprompt = 1 " show menu for one match
+"                :let g:locateopen_database = "db"  " set 'slocate' database
+"                :let g:locateopen_exactly = 0      " disable exactly mode
 "
 " Requirements:  Needs 'slocate' or a compatible program. You'll also need an
 "                up-to-date locate database. Most systems seem to run updatedb
@@ -33,22 +34,29 @@ else
     finish
 endif
 
-let s:slocate_args            = "-r"
+let s:slocate_args            = "-b"
 let s:slocate_i_args          = "-i"
 let s:slocate_database_args   = "-d"
 let s:slocate_cmd             = s:slocate_app . " " . s:slocate_args
-let s:path_seperator          = "/"
+let s:globbing_character      = "\\"
 
 let g:locateopen_ignorecase   = 0
 let g:locateopen_smartcase    = 1
 let g:locateopen_alwaysprompt = 0
-let g:locateopen_database     = ""
+if !exists('g:locateopen_database')
+    let g:locateopen_database     = ""
+endif
+if !exists('g:locateopen_exactly')
+    let g:locateopen_exactly      = 1
+endif
 
-" Escape str for passing to slocate -r, so that magic characters aren't
-" interpreted as regex metachars.
-function! s:EscapeForLocate(str)
-    " hmm, toothpick syndrome
-    return substitute(a:str, "\\W", "\\\\\\0", "g")
+" Create PATTERN for passing to slocate
+function! s:LocatePattern(str)
+    let l:str = s:globbing_character . a:str
+    if g:locateopen_exactly != 1
+        let l:str = l:str . "*"
+    endif
+    return "'" . l:str . "'"
 endfun
 
 " Find file, and if there are several then ask the user which one is
@@ -59,10 +67,12 @@ function! s:LocateFile(file, ignorecase, smartcase)
         let l:command = l:command . " " . s:slocate_i_args
     endif
     if g:locateopen_database != ""
-        let l:command = l:command . " " . s:slocate_database_args . " " . g:locateopen_database
+        let l:command = l:command . " " . s:slocate_database_args . " " .
+            \ g:locateopen_database
     endif
-    let l:command = l:command . " " . s:slocate_args . " '" .
-        \ s:path_seperator . s:EscapeForLocate(a:file) . "$'"
+
+    let l:command = l:command . " " . s:slocate_args . " " .
+        \ s:LocatePattern(a:file)
     let l:options = system(l:command)
 
     " Do we have an error?
