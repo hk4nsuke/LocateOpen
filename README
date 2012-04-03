@@ -1,5 +1,3 @@
-This is a mirror of http://www.vim.org/scripts/script.php?script_id=858
-
 This script uses slocate (or a similar application) to allow the user to open a file without having to enter a path. If multiple files are found the user is given the choice of which file to open.
 
 Usage:
@@ -22,7 +20,10 @@ To enable always prompt mode:
 :let g:locateopen_alwaysprompt = 1
 
 To set 'slocate' database:
-:let g:locateopen_database = "my.db
+:let g:locateopen_database = "my.db"
+
+To disable exactly mode
+:let g:locateopen_exactly = 0
 
 Requirements:
 
