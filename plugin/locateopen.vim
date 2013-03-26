@@ -121,6 +121,54 @@ function! s:LocateFile(file, ignorecase, smartcase)
     endif
 endfun
 
+" Find file, and display in QuickFix
+function! s:LocateFileInQuickFix(file, ignorecase, smartcase)
+    let l:command = s:slocate_app
+    if a:ignorecase
+        let l:command = l:command . " " . s:slocate_i_args
+    endif
+    if g:locateopen_database != ""
+        let l:command = l:command . " " . s:slocate_database_args . " " .
+            \ g:locateopen_database
+    endif
+
+    let l:command = l:command . " " . s:slocate_args . " " .
+        \ s:LocatePattern(a:file)
+    let l:options = system(l:command)
+
+    " Do we have an error?
+    " FIXME: this could potentially be broken on non-English systems, although
+    " FIXME: it looks like slocate isn't nls-capable just now.
+    if l:options =~ "^warning: slocate:"
+        throw "LocateOpenError: Something's screwy. Have you run updatedb " .
+            \ "recently?"
+    endif
+
+    " Do we have no files?
+    if l:options == ""
+        if (a:smartcase) && (!a:ignorecase)
+            return s:LocateFileInQuickFix(a:file, 1, 0)
+        else
+            echo "No file found"
+        endif
+    endif
+
+    " We have one or more files
+    let l:i = stridx(l:options, "\n")
+    let l:list = []
+    while l:i > -1
+        let l:option=strpart(l:options, 0, l:i)
+        let l:options=strpart(l:options, l:i+1)
+        let l:i = stridx(l:options, "\n")
+        call add(l:list, {'filename': l:option})
+    endwhile
+    call setqflist(l:list, 'r')
+	if len(getqflist()) >= 1
+        copen
+        cc
+    endif
+endfun
+
 " Find a file and run :cmd file
 function! s:LocateRun(cmd, file)
     try
@@ -159,11 +207,23 @@ function! LocateRead(file)
     call s:LocateRun('read', a:file)
 endfun
 
+" Find a file and open in quickfix it
+function! LocateQuickFix(file)
+    try
+        call s:LocateFileInQuickFix(a:file, g:locateopen_ignorecase, g:locateopen_smartcase)
+    catch /^LocateOpenError: /
+        echo " "
+        echoerr "Error: " . substitute(v:exception, "^LocateOpenError: ",
+            \ "", "")
+    endtry
+endfun
+
 " Do magicky export things
 command! -nargs=1 LocateEdit   :call LocateEdit(<q-args>)
 command! -nargs=1 LocateTab    :call LocateTab(<q-args>)
 command! -nargs=1 LocateSplit  :call LocateSplit(<q-args>)
 command! -nargs=1 LocateSource :call LocateSource(<q-args>)
 command! -nargs=1 LocateRead   :call LocateRead(<q-args>)
+command! -nargs=1 LocateQuickFix   :call LocateQuickFix(<q-args>)
 
 " vim: set tw=80 ts=4 et :
